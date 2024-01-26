@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, Route, Routes } from "react-router-dom"
 import axios from 'axios'
 
-import MatchRoutes from "./pages/MatchRoutes"
+import MatchRoutes from "./pages/match/MatchRoutes"
 import Home from "./pages/Home"
 import NotFound from "./pages/NotFound"
 import User from "./pages/User"
