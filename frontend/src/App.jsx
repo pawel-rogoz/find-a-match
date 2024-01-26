@@ -5,6 +5,8 @@ import axios from 'axios'
 import MatchRoutes from "./pages/MatchRoutes"
 import Home from "./pages/Home"
 import NotFound from "./pages/NotFound"
+import User from "./pages/User"
+import Object from "./pages/Object"
 
 function App() {
   const [data, setData] = useState(null)
@@ -27,6 +29,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/matches/*" element={<MatchRoutes />} />
+        <Route path="/users/:id" element={<User />} />
+        <Route path="/objects/:id" element={<Object />} />
         <Route path="*" element={<NotFound />}/>
       </Routes>
     </>
