@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react"
+import { Link, Route, Routes } from "react-router-dom"
 import axios from 'axios'
+
+import MatchRoutes from "./pages/MatchRoutes"
+import Home from "./pages/Home"
+import NotFound from "./pages/NotFound"
 
 function App() {
   const [data, setData] = useState(null)
@@ -13,8 +18,17 @@ function App() {
 
   return (
     <>
-      <h1>App</h1>
-      {data ? data.map(person => <li key={person.id}>{person.name}</li>) : null}
+      <nav>
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/matches">Matches</Link></li>
+        </ul>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/matches/*" element={<MatchRoutes />} />
+        <Route path="*" element={<NotFound />}/>
+      </Routes>
     </>
   )
 }
