@@ -7,6 +7,7 @@ function NotFound () {
     useEffect(() => {
         setTimeout(() => {
             navigate("/")
+            // navigate(-1) -> this will take to previous url
         }, 2000)
     }, [])
     return (
