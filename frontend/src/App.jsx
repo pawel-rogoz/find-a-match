@@ -1,21 +1,39 @@
 import { useEffect, useState } from "react"
-import { Link, Route, Routes } from "react-router-dom"
-import axios from 'axios'
+import { Link, Route, Routes, Navigate } from "react-router-dom"
+import axios from "axios"
 
-import MatchRoutes from "./pages/match/MatchRoutes"
-import Home from "./pages/Home"
-import NotFound from "./pages/NotFound"
-import User from "./pages/User"
-import Object from "./pages/Object"
+import MatchRoutes from "./components/match/MatchRoutes"
+import Home from "./components/Home"
+import NotFound from "./components/NotFound"
+import User from "./components/User"
+import Object from "./components/Object"
+import Login from "./components/auth/Login"
+import Register from "./components/auth/Register"
+import Dashboard from "./components/auth/Dashboard"
 
 function App() {
-  const [data, setData] = useState(null)
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  const setAuth = (isAuth) => {
+    setIsAuthenticated(isAuth)
+  }
+
+  const isAuth = () => {
+    axios({
+      method: 'get',
+      url: 'http://localhost:3001/auth/verify',
+      headers: { token: localStorage.token }
+    })
+    .then(response => response.data)
+    .then(parseResponse => {
+      parseResponse === true ? setIsAuthenticated(true) : setIsAuthenticated(false)
+    })
+    .catch(error => console.error(error.message))
+  }
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/api/persons')
-      .then(response => response.data)
-      .then(responseData => setData(responseData))
+    isAuth()
   }, [])
 
   return (
@@ -28,6 +46,27 @@ function App() {
       </nav>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={
+          !isAuthenticated ?
+            <Login setAuth={setAuth}/>
+          :
+            <Navigate to="/dashboard" replace={true} />
+        }
+        />
+        <Route path="/register" element={
+          !isAuthenticated ?
+            <Register setAuth={setAuth}/>
+          :
+            <Navigate to="/dashboard" replace={true} />
+        }
+        />
+        <Route path="/dashboard" element={
+          isAuthenticated ?
+            <Dashboard setAuth={setAuth}/>
+          :
+            <Navigate to="/login" replace={true} />
+        }
+        />
         <Route path="/matches/*" element={<MatchRoutes />} />
         <Route path="/users/:id" element={<User />} />
         <Route path="/objects/:id" element={<Object />} />
