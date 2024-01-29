@@ -59,10 +59,38 @@ router.get("/matches", (request, response) => {
     })
 })
 
+// Returns a match with given id
 router.get("/matches/:id", (request, response) => {
     const match_id = Number(request.params.id)
 
     pool.query('SELECT * FROM matches WHERE match_id = $1', [match_id], (error, results) => {
+        if (error) {
+          throw error
+        }
+        response.status(200).json(results.rows[0])
+    })
+})
+
+// Add match to database, user_id is taken from user token
+router.post("/matches", authorization, (request, response) => {
+    const { object_id, match_date } = request.body
+    const host_id = request.user.id
+
+    pool.query('INSERT INTO matches (object_id, host_id, match_date) VALUES ($1, $2, $3) RETURNING *', [object_id, host_id, match_date], (error, results) => {
+        if (error) {
+          throw error
+        }
+        response.status(200).json(results.rows[0])
+    })
+})
+
+// Add user to a match using POST method but it has no data to send except for id 'hidden' in token
+// WARNING - server crashes if user is already taking part in match - TO DO
+router.post("/matches/:id/users", authorization, (request, response) => {
+    const match_id = Number(request.params.id)
+    const user_id = request.user.id
+
+    pool.query('INSERT INTO users_in_matches (match_id, user_id) VALUES ($1, $2) RETURNING *', [match_id, user_id], (error, results) => {
         if (error) {
           throw error
         }
