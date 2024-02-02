@@ -43,7 +43,7 @@ router.post("/register", validInfo, async (request, response) => {
 
         // 5. generating jwt token
 
-        const token = jwtGenerator(newUser.rows[0].user_id)
+        const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].user_name)
         
         response.json({ token })
     } catch (err) {
@@ -80,7 +80,7 @@ router.post("/login", validInfo, async (request, response) => {
 
         // 4. give them the jwt token
 
-        const token = jwtGenerator(user.rows[0].user_id)
+        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].user_name)
 
         response.json({ token })
 
@@ -92,7 +92,7 @@ router.post("/login", validInfo, async (request, response) => {
 
 router.get("/verify", authorization, async (request, response) => {
     try {
-        response.json(true);
+        response.status(200).json({id: request.user.id, name: request.user.name, authenticated: true});
     } catch (error) {
         console.error(error)
         response.status(500).send("Server Error")
