@@ -59,11 +59,11 @@ router.get("/matches", (request, response) => {
     })
 })
 
-// Returns a match with given id
+// Returns a match with given id, also object name and URL, and host name (using INNER JOIN)
 router.get("/matches/:id", (request, response) => {
     const match_id = Number(request.params.id)
 
-    pool.query('SELECT * FROM matches WHERE match_id = $1', [match_id], (error, results) => {
+    pool.query('SELECT matches.match_id, matches.host_id, matches.match_name, matches.match_date, matches.object_id, matches.num_players, users.user_name, objects.object_name, objects.object_url FROM matches INNER JOIN objects ON objects.object_id = matches.object_id INNER JOIN users ON users.user_id = matches.host_id WHERE match_id = $1', [match_id], (error, results) => {
         if ((error) || (results.rows.length === 0)) {
             response.status(400).send('ERROR: There was an error trying to get data')
         }
@@ -71,12 +71,24 @@ router.get("/matches/:id", (request, response) => {
     })
 })
 
+router.get("/matchesBetweenDates", (request, response) => {
+    const min_date = request.query.min_date
+    const max_date = request.query.max_date
+    
+    pool.query('SELECT * FROM matches WHERE match_date BETWEEN $1 AND $2', [min_date, max_date], (error, results) => {
+        if (error) {
+            response.status(400).send('ERROR')
+        }
+        response.status(200).json(results.rows)
+    })
+})
+
 // Add match to database, user_id is taken from user token
 router.post("/matches", authorization, (request, response) => {
-    const { object_id, match_date } = request.body
+    const { object_id, match_date, match_name, num_players } = request.body
     const host_id = request.user.id
 
-    pool.query('INSERT INTO matches (object_id, host_id, match_date) VALUES ($1, $2, $3) RETURNING *', [object_id, host_id, match_date], (error, results) => {
+    pool.query('INSERT INTO matches (object_id, host_id, match_date, match_name, num_players) VALUES ($1, $2, $3, $4, $5) RETURNING *', [object_id, host_id, match_date, match_name, num_players], (error, results) => {
         if (error) {
           response.status(400).send('ERROR: There was an error adding this match to database')
         }
@@ -93,6 +105,18 @@ router.post("/matches/:id/users", authorization, (request, response) => {
     pool.query('INSERT INTO users_in_matches (match_id, user_id) VALUES ($1, $2) RETURNING *', [match_id, user_id], (error, results) => {
         if (error) {
           response.status(400).send('ERROR: Perhaps user is already taking part in this match')
+        }
+        response.status(200).json(results.rows[0])
+    })
+})
+
+router.delete("/matches/:id/users", authorization, (request, response) => {
+    const match_id = Number(request.params.id)
+    const user_id = request.user.id
+
+    pool.query('DELETE FROM users_in_matches WHERE user_id = $1 AND match_id = $2 RETURNING *', [user_id, match_id], (error, results) => {
+        if (error) {
+            response.status(400).send('ERROR: There was an error adding this match to database')
         }
         response.status(200).json(results.rows[0])
     })
