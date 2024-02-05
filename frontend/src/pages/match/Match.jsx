@@ -51,7 +51,7 @@ function Match ({ userName, userId }) {
     }
 
     const formatDate = (date) => {
-        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false}
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Warsaw'}
         const formattedDate = new Date(date).toLocaleString('en-US', options);
         return formattedDate;
     }
@@ -61,7 +61,7 @@ function Match ({ userName, userId }) {
             <div id="match-data">
                 <h1>{data.match_name}</h1>
                 <h2>Kiedy?</h2>
-                {data.match_date}
+                {/* {data.match_date} */}
                 <h2>{formatDate(data.match_date)}</h2>
             </div>
             <div id="object">
