@@ -13,15 +13,14 @@ import Dashboard from "./pages/auth/Dashboard"
 import AddMatch from "./pages/AddMatch"
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [name, setName] = useState(null)
-  const [id, setId] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const setAuth = (isAuth) => {
-    setIsAuthenticated(isAuth)
-  }
+  const [userData, setUserData] = useState({
+    name: null,
+    id: null
+  })
 
-  const isAuth = () => {
+  const verify = () => {
     axios({
       method: 'get',
       url: 'http://localhost:3001/auth/verify',
@@ -30,58 +29,70 @@ function App() {
     .then(response => response.data)
     .then(response => {
       if (response.authenticated === true) {
-        setIsAuthenticated(true)
-        setName(response.name)
-        setId(response.id)
-      } else {
-        setIsAuthenticated(false)
+        console.log('Name', response.name)
+        console.log('Id', response.id)
+        setUserData({name: response.name, id: response.id})
       }
     })
     .catch(error => console.error(error.message))
+    .finally(() => setIsLoading(false))
   }
 
   useEffect(() => {
-    isAuth()
+    verify()
   }, [])
 
   return (
     <>
-      {/* <nav>
+      <nav>
         <ul>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/matches">Matches</Link></li>
+          <li><Link to="/add-match">Add Match</Link></li>
+          <li><Link to="/dashboard">Dashboard</Link></li>
         </ul>
-      </nav> */}
-      {/* {name} */}
-      <Routes>
-        <Route path="/" element={<Home userName={name} userId={id} />} />
-        <Route path="/login" element={
-          !isAuthenticated ?
-            <Login setAuth={setAuth}/>
-          :
-            <Navigate to="/dashboard" replace={true} />
-        }
-        />
-        <Route path="/register" element={
-          !isAuthenticated ?
-            <Register setAuth={setAuth}/>
-          :
-            <Navigate to="/dashboard" replace={true} />
-        }
-        />
-        <Route path="/dashboard" element={
-          isAuthenticated ?
-            <Dashboard setAuth={setAuth}/>
-          :
-            <Navigate to="/login" replace={true} />
-        }
-        />
-        <Route path="/add-match" element={<AddMatch />} />
-        <Route path="/matches/*" element={<MatchRoutes userName={name} userId={id}/>} />
-        <Route path="/users/:id" element={<User />} />
-        <Route path="/objects/:id" element={<Object />} />
-        <Route path="*" element={<NotFound />}/>
-      </Routes>
+      </nav>
+      {
+        !isLoading ? (
+        <Routes>
+          <Route path="/" element={<Home userData={userData} />} />
+          <Route path="/login" element={
+            !userData.id ?
+              <Login setUserData={setUserData} />
+            :
+              <Navigate to="/dashboard" replace={true} />
+          }
+          />
+          <Route path="/register" element={
+            !userData.id ?
+              <Register setUserData={setUserData} />
+            :
+              <Navigate to="/" replace={true} />
+          }
+          />
+          <Route path="/dashboard" element={
+            userData.id ?
+              <Dashboard userData={userData} setUserData={setUserData} />
+            :
+              <Navigate to="/login" replace={true} />
+          }
+          />
+          <Route path="/add-match" element={
+            userData.id ?
+              <AddMatch />
+            :
+              <Navigate to="/login" replace={true} />
+          } 
+          />
+          <Route path="/matches/*" element={<MatchRoutes userData={userData} />} />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/objects/:id" element={<Object />} />
+          <Route path="*" element={<NotFound />}/>
+        </Routes>
+        ) : (
+          null
+        )
+      }
     </>
   )
 }

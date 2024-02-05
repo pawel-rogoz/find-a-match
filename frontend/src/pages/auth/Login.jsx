@@ -1,11 +1,14 @@
 import { useState } from "react"
 import axios from "axios"
+import { Link } from "react-router-dom"
 
-function Login ({ setAuth }) {
+function Login ({ setUserData }) {
     const [data, setData] = useState({
         email: '',
         password: ''
     })
+    
+    const [isUnsuccesfull, setIsUnsuccesfull] = useState(null)
 
     const { email, password } = data
 
@@ -22,15 +25,20 @@ function Login ({ setAuth }) {
             data: { email, password }
         })
         .then(response => response.data)
-        .then(parseResponse => {
-            if (parseResponse.token) {
-                localStorage.setItem("token", parseResponse.token)
-                setAuth(true)
+        .then(response => {
+            if (response.token) {
+                localStorage.setItem("token", response.token)
+                console.log(setUserData)
+                setUserData({name: response.name, id: response.id})
             } else {
-                setAuth(false)
+                // setAuth(false)
+                setIsUnsuccesfull(true)
             }
         })
-        .catch(error => console.error(error))
+        .catch(error => {
+            console.error(error)
+            setIsUnsuccesfull(true)
+        })
     }
 
     return (
@@ -55,6 +63,13 @@ function Login ({ setAuth }) {
                 />
                 <button className="btn btn-success btn-block">Submit</button>
             </form>
+            <Link to="/register">Don't have an account? Register</Link>
+            {isUnsuccesfull ? (
+                <p>Wrong credentials, try again</p>
+            ) : (
+                null
+            )
+            }
         </>
     )
 }

@@ -1,7 +1,9 @@
 import { useState } from "react"
 import axios from "axios"
+import { Link } from "react-router-dom"
 
-function Register ({ setAuth }) {
+function Register ({ setUserData }) {
+    const [isUnsuccesfull, setIsUnsuccesfull] = useState(false)
     const [data, setData] = useState({
         "email": '',
         "password": '',
@@ -23,15 +25,18 @@ function Register ({ setAuth }) {
             data: {email, password, name }
         })
         .then(response => response.data)
-        .then(parseResponse => {
-            if (parseResponse.token) {
-                localStorage.setItem("token", parseResponse.token)
-                setAuth(true)
+        .then(response => {
+            if (response.token) {
+                localStorage.setItem("token", response.token)
+                setUserData({ name: response.name, id: response.id})
             } else {
-                setAuth(false)
+                setIsUnsuccesfull(true)
             }
         })
-        .catch(error => console.error(error))
+        .catch(error => {
+            console.error(error)
+            setIsUnsuccesfull(true)
+        })
     }
 
     return (
@@ -64,6 +69,12 @@ function Register ({ setAuth }) {
                 />
                 <button className="btn btn-success btn-block">Submit</button>
             </form>
+            <Link to="/login">Login</Link>
+            {isUnsuccesfull ? (
+                <p>There was an error adding Your account. Try again</p>
+            ) : (
+                null
+            )}
         </>
     )
 }
