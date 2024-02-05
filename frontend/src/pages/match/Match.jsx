@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 
-function Match ({ userName, userId }) {
-    const { id } = useParams()
+function Match ({ userData }) {
+    const { matchId } = useParams()
     const [data, setData] = useState({})
     const [players, setPlayers] = useState([])
+
+    const navigate = useNavigate()
+    const { name, id } = userData
+
+    console.log(name)
+    console.log(id)
 
     useEffect(() => {
         axios({
             method: 'get',
-            url: `http://localhost:3001/api/matches/${id}`
+            url: `http://localhost:3001/api/matches/${matchId}`
         })
         .then(response => response.data)
         .then(response => setData(response))
@@ -19,7 +25,7 @@ function Match ({ userName, userId }) {
     useEffect(() => {
         axios({
             method: 'get',
-            url: `http://localhost:3001/api/matches/${id}/users`
+            url: `http://localhost:3001/api/matches/${matchId}/users`
         })
         .then(response => response.data)
         .then(response => {
@@ -28,25 +34,27 @@ function Match ({ userName, userId }) {
     }, [])
 
     const handleClick = (event) => {
-        console.log(event.target.id)
-        console.log(typeof event.target.id)
+        if (!id) {
+            navigate("/login")
+            return
+        }
         const eventType = event.target.id
         if (eventType === 'add') {
             axios({
                 method: 'post',
-                url: `http://localhost:3001/api/matches/${id}/users`,
+                url: `http://localhost:3001/api/matches/${matchId}/users`,
                 headers: { token: localStorage.token } 
             })
             .catch(error => console.error(error))
-            setPlayers(players.concat([{user_name: userName, user_id: userId}]))
+            setPlayers(players.concat([{user_name: name, user_id: id}]))
         } else if (eventType === 'remove') {
             axios({
                 method: 'delete',
-                url: `http://localhost:3001/api/matches/${id}/users`,
+                url: `http://localhost:3001/api/matches/${matchId}/users`,
                 headers: {token: localStorage.token }
             })
             .catch(error => console.error(error))
-            setPlayers(players.filter(player => player.user_id != userId))
+            setPlayers(players.filter(player => player.user_id != id))
         }
     }
 
@@ -71,11 +79,11 @@ function Match ({ userName, userId }) {
             <div id="players">
                 <h2>Players {players.length}/{data.num_players}</h2>
                 <ul>
-                    {players.length === 0 ? <p>No players yet</p> : players.map(player => <li key={player.user_id}>{player.user_name}{player.user_id === data.host_id ? <b> HOST</b> : null}{player.user_id === userId ? <b> YOU</b> : null}</li>)}
+                    {players.length === 0 ? <p>No players yet</p> : players.map(player => <li key={player.user_id}>{player.user_name}{player.user_id === data.host_id ? <b> HOST</b> : null}{player.user_id === id ? <b> YOU</b> : null}</li>)}
                 </ul>
             </div>
             <div id="action">
-                {players.filter(player => player.user_id === userId).length === 1 ? (
+                {players.filter(player => player.user_id === id).length === 1 ? (
                     <button id="remove" onClick={handleClick}>Leave match</button>
                 )   
                 : (
