@@ -61,7 +61,6 @@ function Match ({ userName, userId }) {
             <div id="match-data">
                 <h1>{data.match_name}</h1>
                 <h2>Kiedy?</h2>
-                {/* {data.match_date} */}
                 <h2>{formatDate(data.match_date)}</h2>
             </div>
             <div id="object">
