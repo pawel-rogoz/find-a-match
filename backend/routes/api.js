@@ -8,7 +8,7 @@ router.get("/matches/:id/users", (request, response) => {
 
     pool.query("SELECT users.user_id, users.user_name FROM users_in_matches INNER JOIN users ON users_in_matches.user_id = users.user_id WHERE users_in_matches.match_id = $1", [match_id], (error, results) => {
         if (error) {
-            throw error
+            response.status(400).send(`ERROR: ${error}`)
         }
         response.status(200).json(results.rows)
     })
@@ -20,7 +20,7 @@ router.get("/users/:id/matches", (request, response) => {
 
     pool.query("SELECT match_id FROM users_in_matches WHERE user_id = $1", [user_id], (error, results) => {
         if (error) {
-            throw error
+            response.status(400).send(`ERROR: ${error}`)
         }
         response.status(200).json(results.rows)
     })
@@ -30,7 +30,7 @@ router.get("/users/:id/matches", (request, response) => {
 router.get("/objects", (request, response) => {
     pool.query('SELECT * FROM objects', (error, results) => {
         if (error) {
-          throw error
+            response.status(400).send(`ERROR: ${error}`)
         }
         response.status(200).json(results.rows)
     })
@@ -53,7 +53,7 @@ router.get("/matches", (request, response) => {
 
     pool.query('SELECT * FROM matches', (error, results) => {
         if (error) {
-            response.status(400).send('ERROR: There was an error trying to get data')
+            response.status(400).send(`ERROR: ${error}`)
         }
         response.status(200).json(results.rows)
     })
@@ -75,9 +75,12 @@ router.get("/matchesBetweenDates", (request, response) => {
     const min_date = request.query.min_date
     const max_date = request.query.max_date
     
+    console.log(min_date)
+    console.log(max_date)
+
     pool.query('SELECT * FROM matches WHERE match_date BETWEEN $1 AND $2', [min_date, max_date], (error, results) => {
         if (error) {
-            response.status(400).send('ERROR')
+            response.status(400).send(`ERROR: ${error}`)
         }
         response.status(200).json(results.rows)
     })
@@ -90,9 +93,15 @@ router.post("/matches", authorization, (request, response) => {
 
     pool.query('INSERT INTO matches (object_id, host_id, match_date, match_name, num_players) VALUES ($1, $2, $3, $4, $5) RETURNING *', [object_id, host_id, match_date, match_name, num_players], (error, results) => {
         if (error) {
-          response.status(400).send('ERROR: There was an error adding this match to database')
+          response.status(400).send(`ERROR: ${error}`)
+        } else {
+            pool.query('INSERT INTO users_in_matches (user_id, match_id) VALUES ($1, $2)', [host_id, results.rows[0].match_id], (error, results) => {
+                if (error) {
+                    response.status(400).send(`ERROR: ${error}`)
+                }
+            }) 
+            response.status(200).json(results.rows[0])
         }
-        response.status(200).json(results.rows[0])
     })
 })
 
@@ -104,7 +113,7 @@ router.post("/matches/:id/users", authorization, (request, response) => {
 
     pool.query('INSERT INTO users_in_matches (match_id, user_id) VALUES ($1, $2) RETURNING *', [match_id, user_id], (error, results) => {
         if (error) {
-          response.status(400).send('ERROR: Perhaps user is already taking part in this match')
+            response.status(400).send(`ERROR: ${error}`)
         }
         response.status(200).json(results.rows[0])
     })
@@ -116,7 +125,7 @@ router.delete("/matches/:id/users", authorization, (request, response) => {
 
     pool.query('DELETE FROM users_in_matches WHERE user_id = $1 AND match_id = $2 RETURNING *', [user_id, match_id], (error, results) => {
         if (error) {
-            response.status(400).send('ERROR: There was an error adding this match to database')
+            response.status(400).send(`ERROR: ${error}`)
         }
         response.status(200).json(results.rows[0])
     })
