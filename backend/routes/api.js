@@ -74,9 +74,6 @@ router.get("/matches/:id", (request, response) => {
 router.get("/matchesBetweenDates", (request, response) => {
     const min_date = request.query.min_date
     const max_date = request.query.max_date
-    
-    console.log(min_date)
-    console.log(max_date)
 
     pool.query('SELECT * FROM matches WHERE match_date BETWEEN $1 AND $2', [min_date, max_date], (error, results) => {
         if (error) {
