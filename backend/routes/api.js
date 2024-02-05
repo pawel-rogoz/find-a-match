@@ -18,7 +18,7 @@ router.get("/matches/:id/users", (request, response) => {
 router.get("/users/:id/matches", (request, response) => {
     const user_id = Number(request.params.id)
 
-    pool.query("SELECT match_id FROM users_in_matches WHERE user_id = $1", [user_id], (error, results) => {
+    pool.query("SELECT matches.match_id, matches.match_name, matches.match_date FROM users_in_matches INNER JOIN matches ON users_in_matches.match_id = matches.match_id WHERE user_id = $1", [user_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
         }
