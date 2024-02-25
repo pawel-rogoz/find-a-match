@@ -12,6 +12,8 @@ import Register from "./pages/auth/Register"
 import Dashboard from "./pages/auth/Dashboard"
 import AddMatch from "./pages/AddMatch"
 
+import PageLayout from "./layouts/PageLayout"
+
 function App() {
   const [isLoading, setIsLoading] = useState(true)
 
@@ -43,15 +45,7 @@ function App() {
   }, [])
 
   return (
-    <>
-      <nav>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/matches">Matches</Link></li>
-          <li><Link to="/add-match">Add Match</Link></li>
-          <li><Link to="/dashboard">Dashboard</Link></li>
-        </ul>
-      </nav>
+    <PageLayout userData={userData}>
       {
         !isLoading ? (
         <Routes>
@@ -93,7 +87,7 @@ function App() {
           null
         )
       }
-    </>
+    </PageLayout>
   )
 }
 
