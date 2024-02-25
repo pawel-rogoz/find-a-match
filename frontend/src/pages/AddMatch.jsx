@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 function AddMatch() {
+    const navigate = useNavigate();
+
     const [data, setData] = useState({
         match_name: null,
         match_description: null,
@@ -40,7 +43,7 @@ function AddMatch() {
         })
         .then(response => response.data)
         .then(response => {
-            console.log(response)
+            navigate(`/matches/${response.match_id}`)
         })
         .catch(error => console.error(error))
     }
