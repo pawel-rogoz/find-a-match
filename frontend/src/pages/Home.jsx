@@ -1,8 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
 import Match from "../components/Match"
-import { Grid, GridItem, Text, Flex, Stack, Button, Box } from '@chakra-ui/react'
+import { Text, Flex, Stack, Button } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom"
 
 function Home ({ userData }) {
@@ -45,11 +44,9 @@ function Home ({ userData }) {
                     <Text fontSize='2xl' as='b'>Today's Matches</Text>
                     {matches.length > 0 ? 
                     (
-                        // <Box overflowX="auto" mx={30}>
-                            <Flex justifyContent="center" mt="5vh" mx={10}>
-                                {matches.slice(0,3).map(match => <Match key={match.match_id} match={match}/>)}
-                            </Flex>
-                        // </Box>
+                        <Flex justifyContent="center" mt="5" mx={10}>
+                            {matches.slice(0,3).map(match => <Match key={match.match_id} match={match} width={'25vw'}/>)}
+                        </Flex>
                     )
                     :
                     (
