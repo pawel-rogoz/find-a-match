@@ -1,82 +1,60 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import axios from "axios"
-import { Link } from "react-router-dom"
+import { Box, Text, Button, Stack, useDisclosure, Flex } from "@chakra-ui/react"
+import DateDrawer from "../../components/DateDrawer"
+import Match from "../../components/Match"
 
 function MatchList () {
     const current_date = new Date()
-    const [currentMatches, setCurrentMatches] = useState([])
-    const [pastMatches, setPastMatches] = useState([])
-    const [showCurrent, setShowCurrent] = useState(true)
-    const [showPast, setShowPast] = useState(false)
+    const midnight_date = new Date()
+    midnight_date.setHours(23,59,59,999)
+
+    console.log('Current', current_date)
+    console.log('Midnight', midnight_date)
+
+    const [matches, setMatches] = useState()
+    const [dateMin, setDateMin] = useState(current_date)
+    const [dateMax, setDateMax] = useState(midnight_date)
+
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const btnRef = useRef()
 
     useEffect(() => {
         axios({
             method: 'get',
-            url: `http://localhost:3001/api/matches`
+            url: `http://localhost:3001/api/matchesBetweenDates`,
+            params: { min_date: dateMin, max_date: dateMax}
         })
         .then(response => response.data)
         .then(response => {
-            let pastArray = []
-            let currentArray = []
-            response.forEach((match) => {
-                const match_date = new Date(match.match_date)
-                if (match_date > current_date) {
-                    currentArray.push(match)
-                } else {
-                    pastArray.push(match)
-                }
-            })
-            setCurrentMatches(currentArray)
-            setPastMatches(pastArray)
+            setMatches(response)
         })
-    }, [])
+    }, [dateMin, dateMax])
 
     return (
-        <>
-            <h1>
-                MatchList
-            </h1>
-            <div id="checkInput">
-                <form>
-                    <label htmlFor="current">Show Current</label>
-                    <input type="checkbox" id="current" checked={showCurrent} onChange={() => setShowCurrent(!showCurrent)} />
-                    <br/>
-                    <label htmlFor="past">Show Past</label>
-                    <input type="checkbox" id="past" checked={showPast} onChange={() => setShowPast(!showPast)} />
-                </form>
-            </div>
-            {showCurrent ? (
-                <div>
-                    <h2>Current Matches</h2>
-                    {currentMatches.length > 0 ? (
-                        <ul>
-                        {currentMatches ? currentMatches.map(match => <li key={match.match_id}><Link to={`/matches/${match.match_id}`}>{match.match_name}</Link></li>) : null}
-                        </ul>
-                    ) : (
-                        <p>No current matches</p>
-                    )}
-
-                </div>
-            ) : (
-                null
-            )}
-            {showPast ? (
-                <div>
-                    <h2>Past Matches</h2>
-                    {pastMatches.length > 0 ? (
-                        <ul>
-                        {pastMatches ? pastMatches.map(match => <li key={match.match_id}><Link to={`/matches/${match.match_id}`}>{match.match_name}</Link></li>) : null}
-                        </ul>
-                    ) : (
-                        <p>No past matches</p>
-                    )}
-
-                </div>
-            ) : (
-                null
-            )}
-        </>
-
+        <Box mx={5}>
+            <Stack spacing={5}>
+                <Text fontSize='3xl' as='b'>
+                    Match List
+                </Text>
+                <Button colorScheme='teal' ref={btnRef} onClick={onOpen}>Specify the date</Button>
+                { dateMin.toDateString() === dateMax.toDateString() ? (
+                    <Text fontSize='xl' as='b'>Matches on {dateMin.toLocaleDateString()}</Text>
+                ) : (
+                    <Text fontSize='xl' as='b'>Matches between {dateMin.toLocaleDateString()} and {dateMax.toLocaleDateString()}</Text>
+                )
+                }
+                { matches ? (
+                    <Flex wrap="wrap" justifyContent='center'>
+                        {matches.map(match => <Match match={match} width={'35vw'}/>)}
+                    </Flex>
+                ) : (
+                    null
+                )
+                }
+                <DateDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} setDateMin={setDateMin} setDateMax={setDateMax}/>
+            </Stack>
+        </Box>
     )
 }
 
