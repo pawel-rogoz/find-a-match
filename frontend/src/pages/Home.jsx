@@ -1,8 +1,12 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import Match from "../components/Match"
+import { Grid, GridItem, Text, Flex, Stack, Button, Box } from '@chakra-ui/react'
+import { useNavigate } from "react-router-dom"
 
 function Home ({ userData }) {
+    const navigate = useNavigate()
     const min_date = new Date()
     const max_date = new Date()
     max_date.setHours(23,59,59,999)
@@ -31,24 +35,36 @@ function Home ({ userData }) {
 
     return (
         <>
-            <div>
-                <h1>
-                    Hi{name ? `, ${name}` : ''}
-                </h1>
-            </div>
-            <div>
-                <h2>Today's Matches</h2>
-                {matches.length > 0 ? 
-                (
-                    <ul>
-                        {matches.map(match => <li key={match.match_id}><Link to={`/matches/${match.match_id}`}>{match.match_name}, godzina: {formatDate(match.match_date)}</Link></li>)}
-                    </ul>
-                )
-                :
-                (
-                    <p>There are no matches today</p>
-                )}
-            </div>
+            <Stack mx="5vw">
+                <div>
+                    <Text fontSize='4xl' as='b'>
+                        Hi{name ? `, ${name}` : ''}
+                    </Text>
+                </div>
+                <div>
+                    <Text fontSize='2xl' as='b'>Today's Matches</Text>
+                    {matches.length > 0 ? 
+                    (
+                        // <Box overflowX="auto" mx={30}>
+                            <Flex justifyContent="center" mt="5vh" mx={10}>
+                                {matches.slice(0,3).map(match => <Match key={match.match_id} match={match}/>)}
+                            </Flex>
+                        // </Box>
+                    )
+                    :
+                    (
+                        <p>There are no matches today</p>
+                    )}
+                </div>
+                <Flex mt={5} direction="row" justifyContent='center' alignItems='center' w="100vw">
+                    <Flex w="50%" justifyContent='center'>
+                        <Button fontSize={14} colorScheme='teal' as='b' onClick={() => navigate('/matches')}>SEE ALL MATCHES</Button>
+                    </Flex>
+                    <Flex w="50%">
+                        <Button fontSize={14} colorScheme='teal' as='b' onClick={() => navigate('/add-match')}>ADD YOUR OWN</Button>
+                    </Flex>
+                </Flex>
+            </Stack>
         </>
     )
 }
