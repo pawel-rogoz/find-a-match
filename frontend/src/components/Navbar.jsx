@@ -7,7 +7,7 @@ import NavbarMobileContent from './navbar-content/mobile/NavbarMobileContent';
 function Navbar({ userData }) {
     const [display, changeDisplay] = useState('none')
     return (
-        <Flex height="3rem">
+        <Flex height="4rem">
             <Flex
                 position="fixed"
                 top="1rem"
