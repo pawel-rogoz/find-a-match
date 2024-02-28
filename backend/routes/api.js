@@ -89,11 +89,25 @@ router.get("/matches", (request, response) => {
 router.get("/matches/:id", (request, response) => {
     const match_id = Number(request.params.id)
 
-    pool.query('SELECT matches.match_id, matches.host_id, matches.match_name, matches.match_date, matches.object_id, matches.num_players, users.user_name, objects.object_name, objects.object_url FROM matches INNER JOIN objects ON objects.object_id = matches.object_id INNER JOIN users ON users.user_id = matches.host_id WHERE match_id = $1', [match_id], (error, results) => {
+    pool.query('SELECT matches.*, COUNT(users_in_matches.user_id) AS curr_num_players, users.user_name, objects.object_name, objects.object_url FROM matches INNER JOIN objects ON objects.object_id = matches.object_id INNER JOIN users ON users.user_id = matches.host_id INNER JOIN users_in_matches ON users_in_matches.match_id = matches.match_id WHERE matches.match_id = $1 GROUP BY matches.match_id, users.user_id, objects.object_id', [match_id], (error, results) => {
         if ((error) || (results.rows.length === 0)) {
             response.status(400).send('ERROR: There was an error trying to get data')
         }
+        results.rows[0].curr_num_players = parseInt(results.rows[0].curr_num_players)
         response.status(200).json(results.rows[0])
+    })
+})
+
+router.put("/matches/:id", authorization, (request, response) => {
+    const match_id = Number(request.params.id)
+
+    const { match_code } = request.body
+    
+    pool.query('UPDATE matches SET match_code = $1 WHERE match_id = $2 RETURNING *', [match_code, match_id], (error, results) => {
+        if (error) {
+            response.status(400).send(`ERROR: ${error}`)
+        }
+        response.status(200).json(results)
     })
 })
 
@@ -101,7 +115,7 @@ router.get("/matchesBetweenDates", (request, response) => {
     const min_date = request.query.min_date
     const max_date = request.query.max_date
 
-    pool.query('SELECT * FROM matches WHERE match_date BETWEEN $1 AND $2', [min_date, max_date], (error, results) => {
+    pool.query('SELECT matches.*, COUNT(users_in_matches.user_id) AS curr_num_players FROM matches INNER JOIN users_in_matches ON matches.match_id = users_in_matches.match_id WHERE match_date BETWEEN $1 AND $2 GROUP BY matches.match_id', [min_date, max_date], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
         }
