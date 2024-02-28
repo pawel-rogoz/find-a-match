@@ -1,7 +1,7 @@
 import { Drawer, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, DrawerBody, Input, Stack, Text, Button } from "@chakra-ui/react"
 import { useState } from "react"
 
-function DateDrawer({ isOpen, onClose, btnRef, setDateMin, setDateMax}) {
+function DateDrawer({ isOpen, onClose, btnRef, setDateMin, setDateMax, setIsFirstRender }) {
     const [fromDate, setFromDate] = useState()
     const [toDate, setToDate] = useState()
 
@@ -26,6 +26,7 @@ function DateDrawer({ isOpen, onClose, btnRef, setDateMin, setDateMax}) {
         if (fromDate && toDate && toDate > fromDate) {
             setDateMin(fromDate)
             setDateMax(toDate)
+            setIsFirstRender(false)
         } else {
             console.error('Bad data')
         }
