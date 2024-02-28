@@ -25,7 +25,7 @@ function Match({ match, width }) {
                         </Flex>
                         <Flex justifyContent={['flex-start', 'flex-start', 'center']} alignItems='center'>
                             <FaUserFriends />
-                            <Text ml={1} as='b'>3 / {match.num_players}</Text>
+                            <Text ml={1} as='b'>{match.curr_num_players} / {match.num_players}</Text>
                         </Flex>
                     </Stack>
                 </CardBody>
