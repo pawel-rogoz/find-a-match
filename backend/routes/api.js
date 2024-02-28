@@ -2,6 +2,32 @@ const router = require("express").Router()
 const pool = require("../db")
 const authorization = require("../middleware/authorization")
 
+router.get("/users/:user_id/matches/:match_id", (request, response) => {
+    const user_id = Number(request.params.user_id)
+    const match_id = Number(request.params.match_id)
+
+    pool.query("SELECT user_id, match_id, completed FROM users_in_matches WHERE user_id = $1 AND match_id = $2", [user_id, match_id], (error, results) => {
+        if (error) {
+            response.status(400).send(`ERROR: ${error}`)
+        }
+        response.status(200).json(results.rows[0])
+    })
+})
+
+router.put("/users/:user_id/matches/:match_id", authorization, (request, response) => {
+    const user_id = Number(request.params.user_id)
+    const match_id = Number(request.params.match_id)
+
+    const { completed } = request.body
+
+    pool.query("UPDATE users_in_matches SET completed = $1 WHERE user_id = $2 AND match_id = $3 RETURNING *", [completed, user_id, match_id], (error, results) => {
+        if (error) {
+            response.status(400).send(`ERROR: ${error}`)
+        }
+        response.status(200).json(results.rows[0])
+    })
+})
+
 // List all users that take part in match
 router.get("/matches/:id/users", (request, response) => {
     const match_id = Number(request.params.id)
