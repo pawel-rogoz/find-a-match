@@ -12,9 +12,10 @@ function MatchList () {
     console.log('Current', current_date)
     console.log('Midnight', midnight_date)
 
-    const [matches, setMatches] = useState()
+    const [matches, setMatches] = useState([])
     const [dateMin, setDateMin] = useState(current_date)
     const [dateMax, setDateMax] = useState(midnight_date)
+    const [isFirstRender, setIsFirstRender] = useState(true)
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
@@ -39,20 +40,28 @@ function MatchList () {
                 </Text>
                 <Button colorScheme='teal' ref={btnRef} onClick={onOpen}>Specify the date</Button>
                 { dateMin.toDateString() === dateMax.toDateString() ? (
-                    <Text fontSize='xl' as='b'>Matches on {dateMin.toLocaleDateString()}</Text>
+                    isFirstRender ?
+                    (
+                        <Text fontSize='xl' as='b'>Upcoming matches today</Text>
+                    )
+                    :
+                    (
+                        <Text fontSize='xl' as='b'>Matches on {dateMin.toLocaleDateString()}</Text>
+                    )
+                    
                 ) : (
                     <Text fontSize='xl' as='b'>Matches between {dateMin.toLocaleDateString()} and {dateMax.toLocaleDateString()}</Text>
                 )
                 }
-                { matches ? (
+                { matches.length > 0 ? (
                     <Flex wrap="wrap" justifyContent='center'>
-                        {matches.map(match => <Match match={match} width={'35vw'}/>)}
+                        {matches.map(match => <Match key={match.match_id} match={match} width={'35vw'}/>)}
                     </Flex>
                 ) : (
-                    null
+                    <Text>There {dateMax.toDateString() < current_date.toDateString() ? 'was' : 'is'} no match then</Text>
                 )
                 }
-                <DateDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} setDateMin={setDateMin} setDateMax={setDateMax}/>
+                <DateDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} setDateMin={setDateMin} setDateMax={setDateMax} setIsFirstRender={setIsFirstRender}/>
             </Stack>
         </Box>
     )

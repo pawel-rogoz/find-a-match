@@ -32,7 +32,7 @@ router.put("/users/:user_id/matches/:match_id", authorization, (request, respons
 router.get("/matches/:id/users", (request, response) => {
     const match_id = Number(request.params.id)
 
-    pool.query("SELECT users.user_id, users.user_name FROM users_in_matches INNER JOIN users ON users_in_matches.user_id = users.user_id WHERE users_in_matches.match_id = $1", [match_id], (error, results) => {
+    pool.query("SELECT users.* FROM users_in_matches INNER JOIN users ON users_in_matches.user_id = users.user_id WHERE users_in_matches.match_id = $1", [match_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
         }
@@ -44,7 +44,7 @@ router.get("/matches/:id/users", (request, response) => {
 router.get("/users/:id/matches", (request, response) => {
     const user_id = Number(request.params.id)
 
-    pool.query("SELECT matches.match_id, matches.match_name, matches.match_date FROM users_in_matches INNER JOIN matches ON users_in_matches.match_id = matches.match_id WHERE user_id = $1", [user_id], (error, results) => {
+    pool.query("SELECT matches.* FROM users_in_matches INNER JOIN matches ON users_in_matches.match_id = matches.match_id WHERE user_id = $1", [user_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
         }
@@ -77,10 +77,11 @@ router.get("/objects/:id", (request, response) => {
 // Returns all matches from database
 router.get("/matches", (request, response) => {
 
-    pool.query('SELECT * FROM matches', (error, results) => {
+    pool.query('SELECT matches.*, COUNT(users_in_matches.user_id) AS curr_num_players FROM matches INNER JOIN users_in_matches ON matches.match_id = users_in_matches.match_id GROUP BY matches.match_id', (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
         }
+        results.rows.forEach(row => row.curr_num_players = parseInt(row.curr_num_players))
         response.status(200).json(results.rows)
     })
 })
