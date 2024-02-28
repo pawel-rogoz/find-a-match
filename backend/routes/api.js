@@ -9,6 +9,7 @@ router.get("/users/:user_id/matches/:match_id", (request, response) => {
     pool.query("SELECT user_id, match_id, completed FROM users_in_matches WHERE user_id = $1 AND match_id = $2", [user_id, match_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results.rows[0])
     })
@@ -23,6 +24,7 @@ router.put("/users/:user_id/matches/:match_id", authorization, (request, respons
     pool.query("UPDATE users_in_matches SET completed = $1 WHERE user_id = $2 AND match_id = $3 RETURNING *", [completed, user_id, match_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results.rows[0])
     })
@@ -35,6 +37,7 @@ router.get("/matches/:id/users", (request, response) => {
     pool.query("SELECT users.user_id, users.user_name FROM users_in_matches INNER JOIN users ON users_in_matches.user_id = users.user_id WHERE users_in_matches.match_id = $1", [match_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results.rows)
     })
@@ -47,6 +50,7 @@ router.get("/users/:id/matches", (request, response) => {
     pool.query("SELECT matches.* FROM users_in_matches INNER JOIN matches ON users_in_matches.match_id = matches.match_id WHERE user_id = $1", [user_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results.rows)
     })
@@ -57,6 +61,7 @@ router.get("/objects", (request, response) => {
     pool.query('SELECT * FROM objects', (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results.rows)
     })
@@ -69,6 +74,7 @@ router.get("/objects/:id", (request, response) => {
     pool.query('SELECT * FROM objects WHERE object_id = $1', [object_id], (error, results) => {
         if ((error) || (results.rows.length === 0)) {
             response.status(400).send('ERROR: There was an error trying to get data')
+            return
         }
         response.status(200).json(results.rows[0])
     })
@@ -80,6 +86,7 @@ router.get("/matches", (request, response) => {
     pool.query('SELECT matches.*, COUNT(users_in_matches.user_id) AS curr_num_players FROM matches INNER JOIN users_in_matches ON matches.match_id = users_in_matches.match_id GROUP BY matches.match_id', (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         results.rows.forEach(row => row.curr_num_players = parseInt(row.curr_num_players))
         response.status(200).json(results.rows)
@@ -93,6 +100,7 @@ router.get("/matches/:id", (request, response) => {
     pool.query('SELECT matches.*, COUNT(users_in_matches.user_id) AS curr_num_players, users.user_name, objects.object_name, objects.object_url FROM matches INNER JOIN objects ON objects.object_id = matches.object_id INNER JOIN users ON users.user_id = matches.host_id INNER JOIN users_in_matches ON users_in_matches.match_id = matches.match_id WHERE matches.match_id = $1 GROUP BY matches.match_id, users.user_id, objects.object_id', [match_id], (error, results) => {
         if ((error) || (results.rows.length === 0)) {
             response.status(400).send('ERROR: There was an error trying to get data')
+            return
         }
         results.rows[0].curr_num_players = parseInt(results.rows[0].curr_num_players)
         response.status(200).json(results.rows[0])
@@ -107,6 +115,7 @@ router.put("/matches/:id", authorization, (request, response) => {
     pool.query('UPDATE matches SET match_code = $1 WHERE match_id = $2 RETURNING *', [match_code, match_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results)
     })
@@ -119,6 +128,7 @@ router.get("/matchesBetweenDates", (request, response) => {
     pool.query('SELECT matches.*, COUNT(users_in_matches.user_id) AS curr_num_players FROM matches INNER JOIN users_in_matches ON matches.match_id = users_in_matches.match_id WHERE match_date BETWEEN $1 AND $2 GROUP BY matches.match_id', [min_date, max_date], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results.rows)
     })
@@ -132,10 +142,12 @@ router.post("/matches", authorization, (request, response) => {
     pool.query('INSERT INTO matches (object_id, host_id, match_date, match_name, num_players) VALUES ($1, $2, $3, $4, $5) RETURNING *', [object_id, host_id, match_date, match_name, num_players], (error, results) => {
         if (error) {
           response.status(400).send(`ERROR: ${error}`)
+          return
         } else {
             pool.query('INSERT INTO users_in_matches (user_id, match_id) VALUES ($1, $2)', [host_id, results.rows[0].match_id], (error, results) => {
                 if (error) {
                     response.status(400).send(`ERROR: ${error}`)
+                    return
                 }
             }) 
             response.status(200).json(results.rows[0])
@@ -152,6 +164,7 @@ router.post("/matches/:id/users", authorization, (request, response) => {
     pool.query('INSERT INTO users_in_matches (match_id, user_id) VALUES ($1, $2) RETURNING *', [match_id, user_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results.rows[0])
     })
@@ -164,6 +177,19 @@ router.delete("/matches/:id/users", authorization, (request, response) => {
     pool.query('DELETE FROM users_in_matches WHERE user_id = $1 AND match_id = $2 RETURNING *', [user_id, match_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
+            return
+        }
+        response.status(200).json(results.rows[0])
+    })
+})
+
+router.delete("/matches/:id", authorization, (request, response) => {
+    const match_id = Number(request.params.id)
+
+    pool.query('DELETE FROM matches WHERE match_id = $1 RETURNING *', [match_id], (error, results) => {
+        if (error) {
+            response.status(400).send(`ERROR: ${error}`)
+            return
         }
         response.status(200).json(results.rows[0])
     })
