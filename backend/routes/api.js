@@ -32,7 +32,7 @@ router.put("/users/:user_id/matches/:match_id", authorization, (request, respons
 router.get("/matches/:id/users", (request, response) => {
     const match_id = Number(request.params.id)
 
-    pool.query("SELECT users.* FROM users_in_matches INNER JOIN users ON users_in_matches.user_id = users.user_id WHERE users_in_matches.match_id = $1", [match_id], (error, results) => {
+    pool.query("SELECT users.user_id, users.user_name FROM users_in_matches INNER JOIN users ON users_in_matches.user_id = users.user_id WHERE users_in_matches.match_id = $1", [match_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
         }
