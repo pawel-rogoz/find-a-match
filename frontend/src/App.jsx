@@ -8,7 +8,6 @@ import NotFound from "./pages/NotFound"
 import User from "./pages/User"
 import Object from "./pages/Object"
 import Login from "./pages/auth/Login"
-import Register from "./pages/auth/Register"
 import Dashboard from "./pages/auth/Dashboard"
 import AddMatch from "./pages/AddMatch"
 
@@ -55,13 +54,6 @@ function App() {
               <Login setUserData={setUserData} />
             :
               <Navigate to="/dashboard" replace={true} />
-          }
-          />
-          <Route path="/register" element={
-            !userData.id ?
-              <Register setUserData={setUserData} />
-            :
-              <Navigate to="/" replace={true} />
           }
           />
           <Route path="/dashboard" element={
