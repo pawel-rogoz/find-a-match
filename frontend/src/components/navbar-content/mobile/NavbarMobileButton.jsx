@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 function NavbarMobileButton({ name, path, changeDisplay }) {
     const navigate = useNavigate()
     return (
-        <Link w="100%">
+        // <Link w="100%">
             <Button
                 as="a"
                 variant="ghost"
@@ -18,7 +18,7 @@ function NavbarMobileButton({ name, path, changeDisplay }) {
             >
                 {name}
             </Button>   
-        </Link>  
+        // {/* </Link>   */}
     )
 }
 

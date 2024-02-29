@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 function NavbarDesktopButton({ path, name, changeDisplay }) {
     const navigate = useNavigate()
     return (
-        <Link>
+        // <Link>
             <Button
                 as="a"
                 variant="ghost"
@@ -18,7 +18,7 @@ function NavbarDesktopButton({ path, name, changeDisplay }) {
             >
                 {name}
             </Button>
-        </Link>    
+        // </Link>    
     )
 }
 
