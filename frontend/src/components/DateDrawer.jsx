@@ -1,9 +1,9 @@
 import { Drawer, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, DrawerBody, Input, Stack, Text, Button } from "@chakra-ui/react"
 import { useState } from "react"
 
-function DateDrawer({ isOpen, onClose, btnRef, setDateMin, setDateMax, setIsFirstRender }) {
-    const [fromDate, setFromDate] = useState()
-    const [toDate, setToDate] = useState()
+function DateDrawer({ isOpen, onClose, btnRef, dateMin, setDateMin, dateMax, setDateMax, setIsFirstRender }) {
+    const [fromDate, setFromDate] = useState(dateMin)
+    const [toDate, setToDate] = useState(dateMax)
 
     const handleChange = (event) => {
         console.log('ID', event.target.id)
@@ -27,9 +27,18 @@ function DateDrawer({ isOpen, onClose, btnRef, setDateMin, setDateMax, setIsFirs
             setDateMin(fromDate)
             setDateMax(toDate)
             setIsFirstRender(false)
+            onClose()
         } else {
             console.error('Bad data')
         }
+    }
+
+    function formatDateToYYYYMMDD(date) {
+        const year = date.getFullYear()
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
+        const day = date.getDate().toString().padStart(2, '0')
+    
+        return `${year}-${month}-${day}`
     }
 
     return (
@@ -47,9 +56,9 @@ function DateDrawer({ isOpen, onClose, btnRef, setDateMin, setDateMax, setIsFirs
                     <DrawerBody>
                         <Stack spacing={3}>
                             <Text m={0}>From:</Text>
-                            <Input id="from" type="date" onChange={handleChange} />
+                            <Input id="from" type="date" onChange={handleChange} value={formatDateToYYYYMMDD(fromDate)}/>
                             <Text m={0}>To:</Text>
-                            <Input id="to" type="date" onChange={handleChange} />
+                            <Input id="to" type="date" onChange={handleChange} value={formatDateToYYYYMMDD(toDate)}/>
                             <Button mt={5} onClick={handleSubmit} colorScheme='teal'>Submit</Button>
                         </Stack>
                     </DrawerBody>

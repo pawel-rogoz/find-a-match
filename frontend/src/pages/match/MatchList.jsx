@@ -3,18 +3,17 @@ import axios from "axios"
 import { Box, Text, Button, Stack, useDisclosure, Flex } from "@chakra-ui/react"
 import DateDrawer from "../../components/DateDrawer"
 import Match from "../../components/Match"
+import { useSearchParams } from "react-router-dom"
 
 function MatchList () {
     const current_date = new Date()
     const midnight_date = new Date()
     midnight_date.setHours(23,59,59,999)
 
-    console.log('Current', current_date)
-    console.log('Midnight', midnight_date)
-
+    const [searchParams, setSearchParams] = useSearchParams()
     const [matches, setMatches] = useState([])
-    const [dateMin, setDateMin] = useState(current_date)
-    const [dateMax, setDateMax] = useState(midnight_date)
+    const [dateMin, setDateMin] = useState(searchParams.get("date_min") ? new Date(searchParams.get("date_min")) : current_date)
+    const [dateMax, setDateMax] = useState(searchParams.get("date_max") ? new Date(searchParams.get("date_max")) : midnight_date)
     const [isFirstRender, setIsFirstRender] = useState(true)
 
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -28,6 +27,7 @@ function MatchList () {
         })
         .then(response => response.data)
         .then(response => {
+            setSearchParams({ date_min: dateMin, date_max: dateMax})
             setMatches(response)
         })
     }, [dateMin, dateMax])
@@ -35,33 +35,33 @@ function MatchList () {
     return (
         <Box mx={5}>
             <Stack spacing={5}>
-                <Text fontSize='3xl' as='b'>
+                <Text fontSize='3xl' as='b' mx='auto'>
                     Match List
                 </Text>
-                <Button colorScheme='teal' ref={btnRef} onClick={onOpen}>Specify the date</Button>
+                <Button colorScheme='teal' ref={btnRef} onClick={onOpen} w='90vw' maxW={500} mx='auto'>Specify the date</Button>
                 { dateMin.toDateString() === dateMax.toDateString() ? (
                     isFirstRender ?
                     (
-                        <Text fontSize='xl' as='b'>Upcoming matches today</Text>
+                        <Text fontSize='xl' as='b' mx='auto'>Upcoming matches today</Text>
                     )
                     :
                     (
-                        <Text fontSize='xl' as='b'>Matches on {dateMin.toLocaleDateString()}</Text>
+                        <Text fontSize='xl' as='b' mx='auto'>Matches on {dateMin.toLocaleDateString()}</Text>
                     )
                     
                 ) : (
-                    <Text fontSize='xl' as='b'>Matches between {dateMin.toLocaleDateString()} and {dateMax.toLocaleDateString()}</Text>
+                    <Text fontSize='xl' as='b' mx='auto'>Matches between {dateMin.toLocaleDateString()} and {dateMax.toLocaleDateString()}</Text>
                 )
                 }
                 { matches.length > 0 ? (
                     <Flex wrap="wrap" justifyContent='center'>
-                        {matches.map(match => <Match key={match.match_id} match={match} width={'35vw'}/>)}
+                        {matches.map(match => <Match key={match.match_id} match={match} width={'35vw'} showDate={true}/>)}
                     </Flex>
                 ) : (
-                    <Text>There {dateMax.toDateString() < current_date.toDateString() ? 'was' : 'is'} no match then</Text>
+                    <Text mx='auto'>There {dateMax.toDateString() < current_date.toDateString() ? 'was' : 'is'} no match in this date</Text>
                 )
                 }
-                <DateDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} setDateMin={setDateMin} setDateMax={setDateMax} setIsFirstRender={setIsFirstRender}/>
+                <DateDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} dateMin={dateMin} setDateMin={setDateMin} dateMax={dateMax} setDateMax={setDateMax} setIsFirstRender={setIsFirstRender} />
             </Stack>
         </Box>
     )
