@@ -10,9 +10,15 @@ function Navbar({ userData }) {
         <Flex height="4rem">
             <Flex
                 position="fixed"
-                top="1rem"
-                right="1rem"
-                align="center"
+                top="0"
+                right="0"
+                alignItems="center"
+                justifyContent='flex-end'
+                w='100vw'
+                h='8vh'
+                minH='60px'
+                zIndex={1}
+                bgColor='gray.100'
             >
                 {/* Desktop */}
                 <NavbarDesktopContent changeDisplay={changeDisplay} userData={userData} />
