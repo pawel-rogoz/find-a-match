@@ -5,7 +5,7 @@ import { Link as ReactRouterLink} from "react-router-dom"
 
 function Match({ match, width, showDate }) {
     const date = new Date(match.match_date)
-
+    
     const options = { hour: '2-digit', minute: '2-digit' }
     const locale = date.toLocaleTimeString('pl-PL', options)
     const matchDate = date.toLocaleDateString()
