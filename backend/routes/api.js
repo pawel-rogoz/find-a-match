@@ -34,7 +34,7 @@ router.put("/users/:user_id/matches/:match_id", authorization, (request, respons
 router.get("/matches/:id/users", (request, response) => {
     const match_id = Number(request.params.id)
 
-    pool.query("SELECT users.user_id, users.user_name FROM users_in_matches INNER JOIN users ON users_in_matches.user_id = users.user_id WHERE users_in_matches.match_id = $1", [match_id], (error, results) => {
+    pool.query("SELECT users.user_id, users.user_name, users_in_matches.completed FROM users_in_matches INNER JOIN users ON users_in_matches.user_id = users.user_id WHERE users_in_matches.match_id = $1", [match_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
             return
@@ -47,7 +47,7 @@ router.get("/matches/:id/users", (request, response) => {
 router.get("/users/:id/matches", (request, response) => {
     const user_id = Number(request.params.id)
 
-    pool.query("SELECT matches.* FROM users_in_matches INNER JOIN matches ON users_in_matches.match_id = matches.match_id WHERE user_id = $1", [user_id], (error, results) => {
+    pool.query("SELECT matches.*, user_matches.completed, num_players.curr_num_players FROM (SELECT match_id, user_id, completed FROM users_in_matches WHERE user_id = $1) AS user_matches INNER JOIN (SELECT match_id, COUNT(user_id) AS curr_num_players FROM users_in_matches GROUP BY match_id) AS num_players ON user_matches.match_id = num_players.match_id INNER JOIN (SELECT * FROM matches) AS matches ON user_matches.match_id = matches.match_id", [user_id], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
             return
@@ -109,7 +109,8 @@ router.get("/matches/:id", (request, response) => {
 
 router.put("/matches/:id", authorization, (request, response) => {
     const match_id = Number(request.params.id)
-
+    const user_id = request.user.id
+    console.log(user_id)
     const { match_code } = request.body
     
     pool.query('UPDATE matches SET match_code = $1 WHERE match_id = $2 RETURNING *', [match_code, match_id], (error, results) => {
@@ -117,7 +118,13 @@ router.put("/matches/:id", authorization, (request, response) => {
             response.status(400).send(`ERROR: ${error}`)
             return
         }
-        response.status(200).json(results)
+        pool.query('UPDATE users_in_matches SET completed = $3 WHERE users_in_matches.match_id = $1 AND users_in_matches.user_id = $2', [match_id, user_id, true], (error, results) => {
+            if (error) {
+                response.status(400).send(`ERROR: ${error}`)
+                return
+            }
+        })
+        response.status(200).json(results.rows[0])
     })
 })
 
@@ -125,7 +132,7 @@ router.get("/matchesBetweenDates", (request, response) => {
     const min_date = request.query.min_date
     const max_date = request.query.max_date
 
-    pool.query('SELECT matches.*, COUNT(users_in_matches.user_id) AS curr_num_players FROM matches INNER JOIN users_in_matches ON matches.match_id = users_in_matches.match_id WHERE match_date BETWEEN $1 AND $2 GROUP BY matches.match_id', [min_date, max_date], (error, results) => {
+    pool.query('SELECT matches.*, COUNT(users_in_matches.user_id) AS curr_num_players FROM matches INNER JOIN users_in_matches ON matches.match_id = users_in_matches.match_id WHERE match_date BETWEEN $1 AND $2 GROUP BY matches.match_id ORDER BY matches.match_date DESC', [min_date, max_date], (error, results) => {
         if (error) {
             response.status(400).send(`ERROR: ${error}`)
             return
