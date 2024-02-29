@@ -26,12 +26,6 @@ function Home ({ userData }) {
         .catch(error => console.error(error))
     }, [])
 
-    const formatDate = (date) => {
-        const options = { hour: '2-digit', minute: '2-digit', hour12: false}
-        const formattedDate = new Date(date).toLocaleString('en-US', options);
-        return formattedDate;
-    }
-
     return (
         <>
             <Stack mx="5vw">
@@ -45,7 +39,7 @@ function Home ({ userData }) {
                     {matches.length > 0 ? 
                     (
                         <Flex justifyContent="center" mt="5" mx={10}>
-                            {matches.slice(0,3).map(match => <Match key={match.match_id} match={match} width={'25vw'}/>)}
+                            {matches.slice(0,3).map(match => <Match key={match.match_id} match={match} width={'25vw'} showDate={false}/>)}
                         </Flex>
                     )
                     :
