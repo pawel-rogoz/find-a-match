@@ -99,7 +99,7 @@ function MatchButton({ date, data, players, setPlayers, userData, matchId }) {
                     )
                     :
                     (
-                        <EntryCodeDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} data={data} userData={userData}/>
+                        <EntryCodeDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} data={data} userData={userData} matchId={matchId}/>
                     )
                 )
                 :

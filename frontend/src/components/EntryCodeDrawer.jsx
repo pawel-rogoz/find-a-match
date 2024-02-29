@@ -1,9 +1,9 @@
-import { Drawer, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, DrawerBody, Text, Input, useToast} from "@chakra-ui/react"
+import { Drawer, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, DrawerBody, Text, Input, useToast, Button} from "@chakra-ui/react"
 import axios from "axios"
 import { useState } from "react"
 
 
-function EntryCodeDrawer({ isOpen, onClose, btnRef, data, userData }) {
+function EntryCodeDrawer({ isOpen, onClose, btnRef, data, userData, matchId }) {
     const toast = useToast()
     const [code, setCode] = useState()
 
