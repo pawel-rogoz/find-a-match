@@ -35,10 +35,8 @@ function Login ({ setUserData }) {
 
         axios({
             method: 'post',
-            // url: 'http://localhost:3001/auth/login',
             url: url,
             data: axiosData
-            // data: { email, password }
         })
         .then(response => response.data)
         .then(response => {
