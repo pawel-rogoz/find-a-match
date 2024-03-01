@@ -10,14 +10,15 @@ function DateDrawer({ isOpen, onClose, btnRef, dateMin, setDateMin, dateMax, set
         console.log('Value', event.target.value)
 
         const date = new Date(event.target.value)
+        console.log('date', date.toISOString())
 
         if (event.target.id === 'from') {
             date.setHours(0,0,0,0)
             console.log('From:', date)
             setFromDate(date)
         } else if (event.target.id === 'to') {
-            date.setHours(23,59,59,999)
-            console.log('To:', date)
+            date.setHours(23,59,59,0)
+            console.log('To:', date.toISOString())
             setToDate(date)
         }
     }
