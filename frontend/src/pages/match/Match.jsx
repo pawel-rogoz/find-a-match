@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import axios from "axios"
 import { AspectRatio, Flex, Stack, Text, Box } from "@chakra-ui/react"
-import MatchButton from "../../components/MatchButton"
+import MatchButton from "../../components/MatchButton/MatchButton"
 
 function Match ({ userData }) {
     const { matchId } = useParams()

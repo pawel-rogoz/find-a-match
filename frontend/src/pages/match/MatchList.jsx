@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import { Box, Text, Button, Stack, useDisclosure, Flex } from "@chakra-ui/react"
-import DateDrawer from "../../components/DateDrawer"
+import DateDrawer from "../../components/DateDrawer/DateDrawer"
 import Match from "../../components/Match"
 import { useSearchParams } from "react-router-dom"
 
 function MatchList () {
     const current_date = new Date()
     const midnight_date = new Date()
-    midnight_date.setHours(23,59,59,999)
+    midnight_date.setHours(23,59,59,0)
+
+    console.log('MIDNIGHT', midnight_date)
 
     const [searchParams, setSearchParams] = useSearchParams()
     const [matches, setMatches] = useState([])
