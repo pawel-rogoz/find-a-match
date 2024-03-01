@@ -41,11 +41,11 @@ function EntryCodeDrawer({ isOpen, onClose, btnRef, data, userData, matchId }) {
                 finalFocusRef={btnRef}
             >
                 <DrawerOverlay />
-                <DrawerContent>
+                <DrawerContent data-testid="entry-code">
                     <DrawerCloseButton />
                     <DrawerHeader>ENTRY MATCH CODE</DrawerHeader>
                     <DrawerBody>
-                        <Input type="text" placeholder="000000" onChange={handleChange}></Input>
+                        <Input type="text" placeholder="000000" onChange={handleChange} />
                         <Button onClick={handleSubmit}>SUBMIT</Button>
                     </DrawerBody>
                 </DrawerContent>
