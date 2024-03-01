@@ -1,13 +1,20 @@
 import { Button, useDisclosure } from "@chakra-ui/react"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom"
-import GenerateCodeDrawer from "./GenerateCodeDrawer"
+import GenerateCodeDrawer from "../GenerateCodeDrawer"
 import axios from "axios"
-import CodeDrawer from "./CodeDrawer"
-import EntryCodeDrawer from "./EntryCodeDrawer"
+import CodeDrawer from "../CodeDrawer/CodeDrawer"
+import EntryCodeDrawer from "../EntryCodeDrawer/EntryCodeDrawer"
 
 function MatchButton({ date, data, players, setPlayers, userData, matchId }) {
     const { name, id } = userData
+
+    console.log(date)
+    console.log(data)
+    console.log(players)
+    console.log(setPlayers)
+    console.log(userData)
+    console.log(matchId)
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
