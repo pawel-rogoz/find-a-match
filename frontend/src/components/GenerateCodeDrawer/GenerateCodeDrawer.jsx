@@ -81,7 +81,7 @@ function GenerateCodeDrawer({ isOpen, onClose, btnRef, matchId}) {
                 finalFocusRef={btnRef}
             >
                 <DrawerOverlay />
-                <DrawerContent>
+                <DrawerContent data-testid='generate-code'>
                     <DrawerCloseButton />
                     <DrawerHeader>Generate the code</DrawerHeader>
                     <DrawerBody>
@@ -92,7 +92,7 @@ function GenerateCodeDrawer({ isOpen, onClose, btnRef, matchId}) {
                             <Button id='no' onClick={handleClick} colorScheme={isChosen ? 'gray' : 'red'}>NO</Button>
                         </ButtonGroup>
                         <Flex display={display} h='2rem'>
-                            <Text fontSize='2xl' as='b'>{code}</Text>
+                            <Text data-testid='code' fontSize='2xl' as='b'>{code}</Text>
                         </Flex>
                         <Box display={display}>
                             <Button id='generate' onClick={handleClick} isDisabled={isDisabled} colorScheme='teal'>Generate the code</Button>
@@ -108,7 +108,7 @@ function GenerateCodeDrawer({ isOpen, onClose, btnRef, matchId}) {
                 onClose={onDeleteClose}
             >
                 <AlertDialogOverlay>
-                    <AlertDialogContent>
+                    <AlertDialogContent data-testid='alert'>
                         <AlertDialogHeader fontSize='lg' fontWeight='bold'>
                             Delete Match
                         </AlertDialogHeader>
