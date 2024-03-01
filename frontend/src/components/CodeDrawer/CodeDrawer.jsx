@@ -12,7 +12,7 @@ function CodeDrawer({ isOpen, onClose, btnRef, data }) {
                 finalFocusRef={btnRef}
             >
                 <DrawerOverlay />
-                <DrawerContent>
+                <DrawerContent data-testid="show-code">
                     <DrawerCloseButton />
                     <DrawerHeader>MATCH CODE</DrawerHeader>
                     <DrawerBody>
