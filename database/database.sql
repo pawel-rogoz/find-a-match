@@ -1,5 +1,3 @@
-CREATE DATABASE find_a_match;
-
 CREATE TABLE users(
     user_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_name VARCHAR(255) NOT NULL,
@@ -19,7 +17,8 @@ CREATE TABLE matches(
     host_id INT NOT NULL,
     match_date TIMESTAMP WITH TIME ZONE NOT NULL,
     match_name VARCHAR(255) NOT NULL,
-    num_players INT NOT NULL
+    match_code VARCHAR(6),
+    num_players INT NOT NULL,
     CONSTRAINT fk_object
         FOREIGN KEY(object_id)
             REFERENCES objects(object_id)
@@ -33,6 +32,7 @@ CREATE TABLE matches(
 CREATE TABLE users_in_matches(
     user_id INT NOT NULL,
     match_id INT NOT NULL,
+    completed BOOLEAN,
     PRIMARY KEY (user_id, match_id),
     CONSTRAINT fk_user
         FOREIGN KEY(user_id)
