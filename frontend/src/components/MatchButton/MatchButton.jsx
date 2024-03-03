@@ -1,7 +1,7 @@
 import { Button, useDisclosure } from "@chakra-ui/react"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom"
-import GenerateCodeDrawer from "../GenerateCodeDrawer"
+import GenerateCodeDrawer from "../GenerateCodeDrawer/GenerateCodeDrawer"
 import axios from "axios"
 import CodeDrawer from "../CodeDrawer/CodeDrawer"
 import EntryCodeDrawer from "../EntryCodeDrawer/EntryCodeDrawer"

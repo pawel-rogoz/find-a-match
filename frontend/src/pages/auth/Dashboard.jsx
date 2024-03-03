@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react"
-import Match from "../../components/Match"
+import Match from "../../components/Match/Match"
 
 function Dashboard ({ userData, setUserData }) {
     const [pastMatches, setPastMatches] = useState([])

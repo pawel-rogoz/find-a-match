@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import { Box, Text, Button, Stack, useDisclosure, Flex } from "@chakra-ui/react"
 import DateDrawer from "../../components/DateDrawer/DateDrawer"
-import Match from "../../components/Match"
+import Match from "../../components/Match/Match"
 import { useSearchParams } from "react-router-dom"
 
 function MatchList () {

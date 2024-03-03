@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import Match from "../components/Match"
+import Match from "../components/Match/Match"
 import { Text, Flex, Stack, Button } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom"
 
@@ -8,14 +8,13 @@ function Home ({ userData }) {
     const navigate = useNavigate()
     const min_date = new Date()
     const max_date = new Date()
-    max_date.setHours(23,59,59,999)
+    max_date.setHours(23,59,59,0)
 
     const [matches, setMatches] = useState([])
 
     const { name, id } = userData
 
     useEffect(() => {
-        console.log('effect')
         axios({
             method: 'get',
             url: 'http://localhost:3001/api/matchesBetweenDates',
