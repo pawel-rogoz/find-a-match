@@ -110,7 +110,6 @@ router.get("/matches/:id", (request, response) => {
 router.put("/matches/:id", authorization, (request, response) => {
     const match_id = Number(request.params.id)
     const user_id = request.user.id
-    console.log(user_id)
     const { match_code } = request.body
     
     pool.query('UPDATE matches SET match_code = $1 WHERE match_id = $2 RETURNING *', [match_code, match_id], (error, results) => {
