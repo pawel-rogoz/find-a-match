@@ -65,33 +65,35 @@ function AddMatch() {
     return (
         <Stack spacing={3} m={5} maxW={600}>
             <Heading>Want to add new match?</Heading>
-            <Text as='b'>Complete this form</Text>
-            <Text m={0}>Match's name:</Text>
-            <Input id="match_name" onChange={handleChange} type='text' placeholder="Evening match..."></Input>
-            <Text m={0}>Match's description</Text>
-            <Input id="match_description" onChange={handleChange} type='text' placeholder='6v6 match, two halfs of 35 mins...'></Input>
-            <Text m={0}>Match's date</Text>
-            <Input id="match_date" type='datetime-local' min={new Date} onChange={handleChange}></Input>
-            <Text m={0}>Number of players</Text>
-            <NumberInput id="num_players" defaultValue={defaultNumValue} min={1} max={30} onChange={handleNumberChange}>
-                <NumberInputField id="num_players"/>
-                <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                </NumberInputStepper>
-            </NumberInput>
-            <Text m={0}>Choose an object:</Text>
-            <Select id="object_id" placeholder='Select object' onChange={handleChange}>
-                {/* <option selected disabled value=''>Click here to see the list of objects</option> */}
-                {objects ? (
-                    objects.map((object) => {
-                        return <option key={object.object_id} value={object.object_id}>{object.object_name}</option>
-                    })
-                ) : (
-                    null
-                )}
-            </Select>
-            <Button colorScheme='teal' mt={5} maxW={150} onClick={handleSubmit}>SUBMIT</Button>
+            <form onSubmit={handleSubmit}>
+                <Text as='b'>Complete this form</Text>
+                <Text m={0}>Match's name:</Text>
+                <Input id="match_name" onChange={handleChange} type='text' placeholder="Evening match..." bgColor='white' />
+                <Text m={0}>Match's description</Text>
+                <Input id="match_description" onChange={handleChange} type='text' placeholder='6v6 match, two halfs of 35 mins...' bgColor='white' />
+                <Text m={0}>Match's date</Text>
+                <Input id="match_date" type='datetime-local' min={new Date} onChange={handleChange} bgColor='white' />
+                <Text m={0}>Number of players</Text>
+                <NumberInput id="num_players" defaultValue={defaultNumValue} min={1} max={30} onChange={handleNumberChange} bgColor='white'>
+                    <NumberInputField id="num_players"/>
+                    <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                    </NumberInputStepper>
+                </NumberInput>
+                <Text m={0}>Choose an object:</Text>
+                <Select id="object_id" placeholder='Select object' onChange={handleChange} bgColor='white'>
+                    {/* <option selected disabled value=''>Click here to see the list of objects</option> */}
+                    {objects ? (
+                        objects.map((object) => {
+                            return <option key={object.object_id} value={object.object_id}>{object.object_name}</option>
+                        })
+                    ) : (
+                        null
+                    )}
+                </Select>
+                <Button type="submit" colorScheme='teal' mt={5} maxW={150}>SUBMIT</Button>
+            </form>
         </Stack>
     )
 }
