@@ -15,7 +15,7 @@ Project is created with:
 * Database: PostgreSQL (14.10)
 	
 ## Setup
-To run this project, you have to have [Docker](docker.com) installed.
+To run this project, you have to have [Docker](https://www.docker.com/) installed.
 <br />
 Clone this repository on your local machine and then run docker compose command in its root directory (find_a_match)
 
